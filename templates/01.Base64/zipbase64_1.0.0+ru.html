@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <head>
+        <style>
+            #header
+            {
+                background: #23d86b;
+                padding: 0.7em;
+                text-align: left;
+            }
+            #header a
+            {
+                color: white;
+                text-decoration: none;
+                padding: 0.5em 1em 0.5em 1em;
+            }
+            #title
+            {
+                color: #0f5d2e;
+            }
+            #footer
+            {
+                text-align: center;
+            }
+            table
+            {
+                width: 100%;
+            }
+            textarea
+            {
+                width: 100%;
+                height: 150px;
+                border: 0;
+            }
+            .section
+            {
+                text-align: center;
+                font-weight: bold;
+            }
+            .contents
+            {
+                background: #FFFFFF;
+                width: 720px;
+                padding: 1em;
+                margin-top: 2em;
+                margin-bottom: 2em;
+                border: 1px solid #E0E0E0;
+                text-align: left;
+                color: #444;
+            }
+            html
+            {
+                font-family: sans-serif;
+            }
+            body
+            {
+                line-height: 1.5em;
+            }
+            body
+            {
+                background: #FAFAFA;
+            }
+            table
+            {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            table, th, td
+            {
+                border: 1px solid #aaa;
+                padding: 0.5em;
+                margin-top: 0.5em;
+                margin-bottom: 0.5em;
+            }
+            #lang
+            {
+                float: right;
+            }
+        </style>
+        <title>
+            zipbase64_1.0.0+ru
+        </title>
+    </head>
+    <body>
+        <div id="header">
+            <strong id="title">ZipBase64</strong>
+            <div id="lang">
+                <a href="../en/zipbase64_1.0.0.html">EN</a>
+                <a href="../ru/zipbase64_1.0.0+ru.html">RU</a>
+            </div>
+        </div>
+        <center><div class="contents">
+            <table>
+                <tr><td class="section">Команды:</td></tr>
+                <tr><td>
+                    <ol>
+                        <li><button onclick="window.toolZipBase64.swap()">Сменить ввод и вывод местами</button></li>
+                        <li><button onclick="window.toolZipBase64.toBase64()">Строка -> Base64</button></li>
+                        <li><button onclick="window.toolZipBase64.fromBase64()">Base64 -> Строка</button></li>
+                    </ol>
+                </td></tr>
+                <tr><td class="section">Ввод:</td></tr>
+                <tr><td>
+                    <textarea id="input" placeholder="Вставьте строку ввода сюда"></textarea>
+                </td></tr>
+                <tr><td class="section">Вывод:</td></tr>
+                <tr><td>
+                    <textarea id="output" placeholder="Заберить строку вывода отсюда"></textarea>
+                </td></tr>
+                <tr><td class="section">Журнал:</td></tr>
+                <tr><td id="log"></td></tr>
+            </table>
+        </div></center>
+        <div id="footer">
+            Сайт сгенерирован из <a href="http://github.com/ogstudio/site-zipbase64">этого исходного кода</a>.
+            Сайт расположен на <a href="https://pages.github.com">GitHub Pages</a>.
+        </div>
+
+        <!-- External libraries -->
+        <script type="text/javascript">
+            // SRC: https://github.com/solderjs/TextEncoderLite
+            function TextEncoderLite() {
+            }
+            function TextDecoderLite() {
+            }
+            
+            (function () {
+            'use strict';
+            
+            // Taken from https://github.com/feross/buffer/blob/master/index.js
+            // Thanks Feross et al! :-)
+            
+            function utf8ToBytes (string, units) {
+              units = units || Infinity
+              var codePoint
+              var length = string.length
+              var leadSurrogate = null
+              var bytes = []
+              var i = 0
+            
+              for (; i < length; i++) {
+                codePoint = string.charCodeAt(i)
+            
+                // is surrogate component
+                if (codePoint > 0xD7FF && codePoint < 0xE000) {
+                  // last char was a lead
+                  if (leadSurrogate) {
+                    // 2 leads in a row
+                    if (codePoint < 0xDC00) {
+                      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+                      leadSurrogate = codePoint
+                      continue
+                    } else {
+                      // valid surrogate pair
+                      codePoint = leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00 | 0x10000
+                      leadSurrogate = null
+                    }
+                  } else {
+                    // no lead yet
+            
+                    if (codePoint > 0xDBFF) {
+                      // unexpected trail
+                      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+                      continue
+                    } else if (i + 1 === length) {
+                      // unpaired lead
+                      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+                      continue
+                    } else {
+                      // valid lead
+                      leadSurrogate = codePoint
+                      continue
+                    }
+                  }
+                } else if (leadSurrogate) {
+                  // valid bmp char, but last char was a lead
+                  if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
+                  leadSurrogate = null
+                }
+            
+                // encode utf8
+                if (codePoint < 0x80) {
+                  if ((units -= 1) < 0) break
+                  bytes.push(codePoint)
+                } else if (codePoint < 0x800) {
+                  if ((units -= 2) < 0) break
+                  bytes.push(
+                    codePoint >> 0x6 | 0xC0,
+                    codePoint & 0x3F | 0x80
+                  )
+                } else if (codePoint < 0x10000) {
+                  if ((units -= 3) < 0) break
+                  bytes.push(
+                    codePoint >> 0xC | 0xE0,
+                    codePoint >> 0x6 & 0x3F | 0x80,
+                    codePoint & 0x3F | 0x80
+                  )
+                } else if (codePoint < 0x200000) {
+                  if ((units -= 4) < 0) break
+                  bytes.push(
+                    codePoint >> 0x12 | 0xF0,
+                    codePoint >> 0xC & 0x3F | 0x80,
+                    codePoint >> 0x6 & 0x3F | 0x80,
+                    codePoint & 0x3F | 0x80
+                  )
+                } else {
+                  throw new Error('Invalid code point')
+                }
+              }
+            
+              return bytes
+            }
+            
+            function utf8Slice (buf, start, end) {
+              var res = ''
+              var tmp = ''
+              end = Math.min(buf.length, end || Infinity)
+              start = start || 0;
+            
+              for (var i = start; i < end; i++) {
+                if (buf[i] <= 0x7F) {
+                  res += decodeUtf8Char(tmp) + String.fromCharCode(buf[i])
+                  tmp = ''
+                } else {
+                  tmp += '%' + buf[i].toString(16)
+                }
+              }
+            
+              return res + decodeUtf8Char(tmp)
+            }
+            
+            function decodeUtf8Char (str) {
+              try {
+                return decodeURIComponent(str)
+              } catch (err) {
+                return String.fromCharCode(0xFFFD) // UTF 8 invalid char
+              }
+            }
+            
+            TextEncoderLite.prototype.encode = function (str) {
+              var result;
+            
+              if ('undefined' === typeof Uint8Array) {
+                result = utf8ToBytes(str);
+              } else {
+                result = new Uint8Array(utf8ToBytes(str));
+              }
+            
+              return result;
+            };
+            
+            TextDecoderLite.prototype.decode = function (bytes) {
+              return utf8Slice(bytes, 0, bytes.length);
+            }
+            
+            }());
+            
+            if(typeof module === "object" && module) {
+              module.exports.TextDecoderLite = TextDecoderLite;
+              module.exports.TextEncoderLite = TextEncoderLite;
+            }
+            // SRC: https://github.com/beatgammit/base64-js
+            (function(r){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=r()}else if(typeof define==="function"&&define.amd){define([],r)}else{var e;if(typeof window!=="undefined"){e=window}else if(typeof global!=="undefined"){e=global}else if(typeof self!=="undefined"){e=self}else{e=this}e.base64js=r()}})(function(){var r,e,n;return function(){function r(e,n,t){function o(f,i){if(!n[f]){if(!e[f]){var u="function"==typeof require&&require;if(!i&&u)return u(f,!0);if(a)return a(f,!0);var v=new Error("Cannot find module '"+f+"'");throw v.code="MODULE_NOT_FOUND",v}var d=n[f]={exports:{}};e[f][0].call(d.exports,function(r){var n=e[f][1][r];return o(n||r)},d,d.exports,r,e,n,t)}return n[f].exports}for(var a="function"==typeof require&&require,f=0;f<t.length;f++)o(t[f]);return o}return r}()({"/":[function(r,e,n){"use strict";n.byteLength=d;n.toByteArray=h;n.fromByteArray=p;var t=[];var o=[];var a=typeof Uint8Array!=="undefined"?Uint8Array:Array;var f="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";for(var i=0,u=f.length;i<u;++i){t[i]=f[i];o[f.charCodeAt(i)]=i}o["-".charCodeAt(0)]=62;o["_".charCodeAt(0)]=63;function v(r){var e=r.length;if(e%4>0){throw new Error("Invalid string. Length must be a multiple of 4")}var n=r.indexOf("=");if(n===-1)n=e;var t=n===e?0:4-n%4;return[n,t]}function d(r){var e=v(r);var n=e[0];var t=e[1];return(n+t)*3/4-t}function c(r,e,n){return(e+n)*3/4-n}function h(r){var e;var n=v(r);var t=n[0];var f=n[1];var i=new a(c(r,t,f));var u=0;var d=f>0?t-4:t;for(var h=0;h<d;h+=4){e=o[r.charCodeAt(h)]<<18|o[r.charCodeAt(h+1)]<<12|o[r.charCodeAt(h+2)]<<6|o[r.charCodeAt(h+3)];i[u++]=e>>16&255;i[u++]=e>>8&255;i[u++]=e&255}if(f===2){e=o[r.charCodeAt(h)]<<2|o[r.charCodeAt(h+1)]>>4;i[u++]=e&255}if(f===1){e=o[r.charCodeAt(h)]<<10|o[r.charCodeAt(h+1)]<<4|o[r.charCodeAt(h+2)]>>2;i[u++]=e>>8&255;i[u++]=e&255}return i}function s(r){return t[r>>18&63]+t[r>>12&63]+t[r>>6&63]+t[r&63]}function l(r,e,n){var t;var o=[];for(var a=e;a<n;a+=3){t=(r[a]<<16&16711680)+(r[a+1]<<8&65280)+(r[a+2]&255);o.push(s(t))}return o.join("")}function p(r){var e;var n=r.length;var o=n%3;var a=[];var f=16383;for(var i=0,u=n-o;i<u;i+=f){a.push(l(r,i,i+f>u?u:i+f))}if(o===1){e=r[n-1];a.push(t[e>>2]+t[e<<4&63]+"==")}else if(o===2){e=(r[n-2]<<8)+r[n-1];a.push(t[e>>10]+t[e>>4&63]+t[e<<2&63]+"=")}return a.join("")}},{}]},{},[])("/")});
+        </script>
+
+        <!-- Reusable functions -->
+        <script type="text/javascript">
+            function LOG(message)
+            {
+                var log = document.getElementById("log");
+                var now = new Date();
+                log.innerHTML += now.toISOString() + " " + message + "<br>";
+            }
+            // Topic: JavaScript equivalent to printf/String.Format
+            // Source: https://stackoverflow.com/a/4673436
+            function formatString()
+            {
+                // Topic: How to shift “arguments”?
+                // Source: https://stackoverflow.com/questions/4775895/how-to-shift-arguments
+                var args = Array.prototype.slice.call(arguments);
+                var str = args.shift();
+                return str.replace(/{(\d+)}/g, function(match, number) { 
+                          return typeof args[number] != 'undefined'
+                            ? args[number]
+                            : match
+                          ;
+                        });
+            };
+            // SRC: https://developer.mozilla.org/ru/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+            function base64Encode(str)
+            {
+                var bytes = new (TextEncoder || TextEncoderLite)("utf-8").encode(str);
+                return base64js.fromByteArray(bytes);
+            }
+            function base64Decode(str)
+            {
+                var bytes = base64js.toByteArray(str);
+                return new (TextDecoder || TextDecoderLite)("utf-8").decode(bytes);
+            }
+        </script>
+
+        <!-- Tool -->
+        <script type="text/javascript">
+            // Tool class.
+            function Tool()
+            {
+                var self = this;
+                this.logTranslations = {};
+                this.logTranslations["СМЕНА"] = "Произведена замена ввода({0}) и вывода({1}) местами";
+                this.logTranslations["В_БАЗУ64"] = "Произведено шифрование ввода({0}) в вывод({1}) Base64";
+                this.logTranslations["ИЗ_БАЗЫ64"] = "Произведена расшифровка ввода({0}) Base64 в вывод({1})";
+            }
+            Tool.prototype.LOG = function()
+            {
+                console.log("Tool+LOG");
+                var args = Array.prototype.slice.call(arguments);
+                var translationKey = args.shift();
+                var message = "";
+                if (translationKey in this.logTranslations)
+                {
+                    args.unshift(this.logTranslations[translationKey]);
+                    // Topic: Converting an array to a function arguments list
+                    // Source: https://stackoverflow.com/a/1316389
+                    message = formatString.apply(null, args);
+                }
+                else
+                {
+                    message = translationKey + " " + args.join(" ");
+                }
+                LOG(message);
+            }
+            Tool.prototype.swap = function()
+            {
+                var input = document.getElementById("input");
+                var output = document.getElementById("output");
+            
+                var inputText = input.value;
+                var outputText = output.value;
+                input.value = outputText;
+                output.value = inputText;
+            
+                this.LOG("СМЕНА", inputText.length, outputText.length);
+            }
+            Tool.prototype.toBase64 = function()
+            {
+                var input = document.getElementById("input");
+                var output = document.getElementById("output");
+            
+                output.value = base64Encode(input.value);
+            
+                this.LOG("В_БАЗУ64", input.value.length, output.value.length);
+            }
+            Tool.prototype.fromBase64 = function()
+            {
+                var input = document.getElementById("input");
+                var output = document.getElementById("output");
+            
+                output.value = base64Decode(input.value);
+            
+                this.LOG("ИЗ_БАЗЫ64", input.value.length, output.value.length);
+            }
+
+            window.toolZipBase64 = new Tool();
+        </script>
+
+    </body>
+</html>
+
