@@ -4,7 +4,6 @@ this.logTranslations = {};
 AMLEO Impl
 Tool.prototype.LOG = function()
 {
-    console.log("Tool+LOG");
     var args = Array.prototype.slice.call(arguments);
     var translationKey = args.shift();
     var message = "";

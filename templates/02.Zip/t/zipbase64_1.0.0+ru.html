@@ -1,0 +1,71 @@
+AMLEO site-zipbase64.UI.Base/Style
+            AMLEO site-zipbase64.UI.Menu/Style
+            AMLEO site-zipbase64.UI.Title/Style
+            AMLEO site-zipbase64.UI.Footer/Style
+            AMLEO site-zipbase64.UI.InOut/Style
+            AMLEO site-zipbase64.UI.Contents/Style
+            AMLEO site-zipbase64.UI.Style/Font
+            AMLEO site-zipbase64.UI.Style/LineHeight
+            AMLEO site-zipbase64.UI.Style/Background
+            AMLEO site-zipbase64.UI.Style/Table
+            AMLEO site-zipbase64.UI.Lang/Style
+AMLEO site-zipbase64.UI.Base/Title
+            AMLEO site-zipbase64.UI.Title-ru/Head
+AMLEO site-zipbase64.UI.Base/Body
+        AMLEO site-zipbase64.UI.Menu/Start
+            AMLEO site-zipbase64.UI.Title/Body
+            AMLEO site-zipbase64.UI.Lang/Menu
+        AMLEO site-zipbase64.UI.Menu/End
+        AMLEO site-zipbase64.UI.Contents/Begin
+            AMLEO site-zipbase64.UI.About-ru/Body
+            AMLEO site-zipbase64.UI.InOut/Begin
+                AMLEO site-zipbase64.UI.Commands-ru/Begin
+                        AMLEO site-zipbase64.UI.Commands-ru/Swap
+                        AMLEO site-zipbase64.UI.Commands-ru/ToBase64
+                        AMLEO site-zipbase64.UI.Commands-ru/FromBase64
+                        AMLEO site-zipbase64.UI.Commands-ru/ToZipBase64
+                        AMLEO site-zipbase64.UI.Commands-ru/FromZipBase64
+                AMLEO site-zipbase64.UI.Commands/End
+                AMLEO site-zipbase64.UI.InOut-ru/Input
+                AMLEO site-zipbase64.UI.InOut-ru/Output
+                AMLEO site-zipbase64.UI.Log-ru/Body
+            AMLEO site-zipbase64.UI.InOut/End
+        AMLEO site-zipbase64.UI.Contents/End
+        AMLEO site-zipbase64.UI.Footer-ru/Body
+
+        <!-- External libraries -->
+AMLEO site-zipbase64.UI.Base/Script.Begin
+            AMLEO site-zipbase64.TextEncoderLite/Impl
+            AMLEO site-zipbase64.Base64-js/Impl
+            AMLEO site-zipbase64.zlib/Impl
+AMLEO site-zipbase64.UI.Base/Script.End
+
+        <!-- Reusable functions -->
+AMLEO site-zipbase64.UI.Base/Script.Begin
+            AMLEO site-zipbase64.LOG/Impl
+            AMLEO site-zipbase64.formatString/Impl
+            AMLEO site-zipbase64.Base64/Impl
+AMLEO site-zipbase64.UI.Base/Script.End
+
+        <!-- Tool -->
+AMLEO site-zipbase64.UI.Base/Script.Begin
+            AMLEO site-zipbase64.Tool/Setup
+                AMLEO site-zipbase64.Tool+LOG/Setup
+                AMLEO site-zipbase64.Tool.LogTranslations-ru/СМЕНА
+                AMLEO site-zipbase64.Tool.LogTranslations-ru/В_БАЗУ64
+                AMLEO site-zipbase64.Tool.LogTranslations-ru/ИЗ_БАЗЫ64
+                AMLEO site-zipbase64.Tool.LogTranslations-ru/В_ЗИП_БАЗУ64
+                AMLEO site-zipbase64.Tool.LogTranslations-ru/ИЗ_ЗИП_БАЗЫ64
+            AMLEO site-zipbase64.Tool/End
+            AMLEO site-zipbase64.Tool+LOG/Impl
+            AMLEO site-zipbase64.Tool+swap/Impl
+            AMLEO site-zipbase64.Tool+toBase64/Impl
+            AMLEO site-zipbase64.Tool+fromBase64/Impl
+            AMLEO site-zipbase64.Tool+toZipBase64/Impl
+            AMLEO site-zipbase64.Tool+fromZipBase64/Impl
+
+            AMLEO site-zipbase64.Tool/Init
+AMLEO site-zipbase64.UI.Base/Script.End
+
+AMLEO site-zipbase64.UI.Base/End
+
