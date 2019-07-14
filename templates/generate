@@ -3,9 +3,12 @@
 # using AMLEO: http://opengamestudio.org/amleo
 
 DIR=`dirname $0`
+ZB64=$DIR/../../zipbase64
 GEN=amleo.py
 
 # 01.Base64.
 $GEN $DIR/01*/{cfg,t,v}
 # 02.Zip.
 $GEN $DIR/02*/{cfg,t} $DIR/0{1,2}*/v
+# 03.UseExt.
+$GEN $DIR/03*/{cfg,t} $ZB64 $DIR/0{1,2,3}*/v
